@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About - Synref</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    :root { --bg:#ffffff; --bg2:#f5f5f7; --text:#1d1d1f; --muted:#6e6e73; --border:rgba(0,0,0,0.1); }
+    body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); -webkit-font-smoothing:antialiased; }
+    a { text-decoration:none; color:inherit; }
+    nav { position:sticky; top:0; z-index:100; background:rgba(255,255,255,0.88); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border-bottom:0.5px solid var(--border); display:flex; align-items:center; justify-content:space-between; padding:0 2.5rem; height:52px; }
+    .nav-logo { display:flex; align-items:center; gap:9px; }
+    .nav-logo svg { width:26px; height:26px; }
+    .nav-logo-text { font-size:14px; font-weight:500; letter-spacing:0.18rem; }
+    .nav-links { display:flex; gap:2.2rem; list-style:none; }
+    .nav-links a { font-size:13px; color:var(--muted); transition:color 0.2s; }
+    .nav-links a:hover, .nav-links a.active { color:var(--text); }
+    .search-btn { display:flex; align-items:center; gap:6px; background:var(--bg2); border:0.5px solid var(--border); border-radius:20px; padding:6px 14px; font-size:13px; color:var(--muted); cursor:pointer; font-family:'DM Sans',sans-serif; transition:background 0.2s; }
+    .search-btn:hover { background:#ebebed; }
+    .search-btn svg { width:13px; height:13px; }
+    .search-overlay { display:none; position:fixed; inset:0; z-index:200; background:rgba(0,0,0,0.35); backdrop-filter:blur(4px); }
+    .search-overlay.open { display:flex; align-items:flex-start; justify-content:center; padding-top:10vh; }
+    .search-box { background:var(--bg); border-radius:16px; width:90%; max-width:580px; box-shadow:0 20px 60px rgba(0,0,0,0.15); overflow:hidden; }
+    .search-row { display:flex; align-items:center; gap:10px; padding:1rem 1.25rem; border-bottom:0.5px solid var(--border); }
+    .search-row svg { width:15px; height:15px; flex-shrink:0; }
+    #search-input { flex:1; border:none; outline:none; font-size:16px; font-family:'DM Sans',sans-serif; color:var(--text); background:transparent; }
+    #search-input::placeholder { color:var(--muted); }
+    .search-close { background:none; border:none; cursor:pointer; font-size:13px; color:var(--muted); font-family:'DM Sans',sans-serif; }
+    #search-results { max-height:380px; overflow-y:auto; }
+    .s-item { display:block; padding:0.85rem 1.25rem; border-bottom:0.5px solid var(--border); transition:background 0.15s; }
+    .s-item:hover { background:var(--bg2); }
+    .s-label { font-size:10px; letter-spacing:0.1rem; color:var(--muted); margin-bottom:2px; }
+    .s-title { font-size:14px; font-weight:500; margin-bottom:2px; }
+    .s-excerpt { font-size:12px; color:var(--muted); line-height:1.5; }
+    .s-empty { padding:2rem 1.25rem; text-align:center; font-size:14px; color:var(--muted); }
+    .page-hero { padding:6rem 2.5rem 4rem; border-bottom:0.5px solid var(--border); max-width:760px; margin:0 auto; }
+    .page-label { font-size:11px; letter-spacing:0.2rem; color:var(--muted); margin-bottom:1.25rem; }
+    .page-hero h1 { font-family:'DM Serif Display',serif; font-size:clamp(2.5rem,6vw,4rem); font-weight:400; line-height:1.1; margin-bottom:1.25rem; }
+    .page-hero p { font-size:18px; color:var(--muted); line-height:1.65; font-weight:300; }
+    .content { max-width:760px; margin:0 auto; padding:0 2.5rem; }
+    .block { padding:3.5rem 0; border-bottom:0.5px solid var(--border); }
+    .block-label { font-size:11px; letter-spacing:0.15rem; color:var(--muted); margin-bottom:1.25rem; }
+    .block h2 { font-family:'DM Serif Display',serif; font-size:clamp(1.6rem,3.5vw,2.2rem); font-weight:400; line-height:1.2; margin-bottom:1rem; }
+    .block p { font-size:16px; color:var(--muted); line-height:1.75; font-weight:300; margin-bottom:1rem; }
+    .block p:last-child { margin-bottom:0; }
+    .name-grid { display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--border); border:0.5px solid var(--border); border-radius:16px; overflow:hidden; margin-top:2rem; }
+    .name-part { background:var(--bg); padding:2rem 1.75rem; }
+    .name-word { font-family:'DM Serif Display',serif; font-size:2.5rem; font-weight:400; margin-bottom:0.5rem; }
+    .name-origin { font-size:11px; letter-spacing:0.1rem; color:var(--muted); margin-bottom:0.75rem; }
+    .name-part p { font-size:14px; color:var(--muted); line-height:1.6; font-weight:300; margin:0; }
+    blockquote { font-family:'DM Serif Display',serif; font-size:clamp(1.4rem,3vw,2rem); font-weight:400; line-height:1.35; padding-left:1.5rem; border-left:2px solid var(--text); margin:3.5rem 0; }
+    blockquote cite { display:block; font-family:'DM Sans',sans-serif; font-size:13px; color:var(--muted); font-style:normal; margin-top:1rem; font-weight:300; }
+    .cta { padding:4rem 0; text-align:center; }
+    .cta h2 { font-family:'DM Serif Display',serif; font-size:clamp(1.6rem,3.5vw,2.2rem); font-weight:400; margin-bottom:1rem; }
+    .cta p { font-size:16px; color:var(--muted); margin-bottom:2rem; font-weight:300; }
+    .btn-dark { display:inline-block; background:var(--text); color:var(--bg); padding:13px 30px; border-radius:980px; font-size:14px; font-family:'DM Sans',sans-serif; transition:opacity 0.2s; }
+    .btn-dark:hover { opacity:0.8; }
+    footer { border-top:0.5px solid var(--border); padding:2rem 2.5rem; display:grid; grid-template-columns:1fr 1fr 1fr; align-items:center; margin-top:2rem; }
+    footer p { font-size:12px; color:var(--muted); }
+    footer p:nth-child(2) { text-align:center; }
+    footer p:nth-child(3) { text-align:right; }
+  </style>
+</head>
+<body>
+<nav>
+  <a href="/" class="nav-logo">
+    <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="14" cy="14" r="13" stroke="#1d1d1f" stroke-width="1.5"/>
+      <path d="M4 14 Q8 6 12 14 Q16 22 20 14 Q24 6 26 14" stroke="#1d1d1f" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    </svg>
+    <span class="nav-logo-text">SYNREF</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="/solve">Solve</a></li>
+    <li><a href="/systems">Systems</a></li>
+    <li><a href="/train">Train</a></li>
+    <li><a href="/quotes">Quotes</a></li>
+    <li><a href="/about" class="active">About</a></li>
+  </ul>
+  <button class="search-btn" onclick="openSearch()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    Search
+  </button>
+</nav>
+<div class="search-overlay" id="overlay" onclick="outsideClick(event)">
+  <div class="search-box">
+    <div class="search-row">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" id="search-input" placeholder="Search Synref..." oninput="doSearch(this.value)">
+      <button class="search-close" onclick="closeSearch()">Close</button>
+    </div>
+    <div id="search-results"><div class="s-empty">Start typing to search.</div></div>
+  </div>
+</div>
+
+<div class="page-hero">
+  <p class="page-label">ABOUT</p>
+  <h1>Why Synref exists.</h1>
+  <p>Most people know what they should do. They still do not do it. The gap between knowing and acting is almost always a reflection problem.</p>
+</div>
+
+<div class="content">
+
+  <div class="block">
+    <p class="block-label">THE PROBLEM</p>
+    <h2>We live on autopilot.</h2>
+    <p>Most people go through their days reacting, not choosing. Bad habits persist. Goals stay abstract. Decisions are made on impulse rather than intention. Not because people are lazy, but because they never stop to actually think.</p>
+    <p>Without self-reflection, there is no self-awareness. Without self-awareness, there is no real change. You cannot fix what you cannot see.</p>
+  </div>
+
+  <div class="block">
+    <p class="block-label">THE SOLUTION</p>
+    <h2>Structured reflection leads to deliberate action.</h2>
+    <p>Synref is a tool for thinking clearly about yourself. It helps you identify what is actually going wrong, understand why it is happening, and take concrete steps to change it.</p>
+    <p>Not motivation. Not inspiration. A system. Because systems work when motivation does not.</p>
+  </div>
+
+  <div class="block">
+    <p class="block-label">THE BENEFIT</p>
+    <h2>From unconscious to intentional.</h2>
+    <p>When you reflect consistently, patterns become visible. You stop repeating the same mistakes. You make better decisions faster. You build the kind of self-knowledge that compounds over time, the same way interest compounds in a bank account.</p>
+    <p>The goal is not perfection. It is awareness, followed by action.</p>
+  </div>
+
+  <div class="block">
+    <p class="block-label">THE NAME</p>
+    <h2>What does Synref mean?</h2>
+    <p>The name comes from two roots:</p>
+    <div class="name-grid">
+      <div class="name-part">
+        <div class="name-word">Syn</div>
+        <div class="name-origin">Greek: syn, meaning "together" or "with"</div>
+        <p>Connection. Integration. The bringing together of scattered thoughts into a single clear picture of yourself.</p>
+      </div>
+      <div class="name-part">
+        <div class="name-word">Ref</div>
+        <div class="name-origin">Latin: reflectere, meaning "to bend back"</div>
+        <p>Reflection. Turning your attention inward. Seeing yourself clearly, without distortion or avoidance.</p>
+      </div>
+    </div>
+  </div>
+
+  <blockquote>
+    "Know thyself."
+    <cite>Socrates, 470 BC. Still the most important advice ever given about self-reflection.</cite>
+  </blockquote>
+
+  <div class="cta">
+    <h2>Ready to start?</h2>
+    <p>Pick a problem. Reflect on it. Take action.</p>
+    <a href="/solve" class="btn-dark">Go to Solve</a>
+  </div>
+
+</div>
+
+<footer>
+  <p>Synref</p>
+  <p>Copyright 2026 Synref. All rights reserved.</p>
+  <p>Reflect. Decide. Act.</p>
+</footer>
+
+<script>
+const DATA = [
+  {title:"Attention span",label:"SOLVE",excerpt:"Understand what fragments your focus.",url:"/solve#attention"},
+  {title:"Social media addiction",label:"SOLVE",excerpt:"Break the scroll loop with awareness.",url:"/solve#social-media"},
+  {title:"Sleep deprivation",label:"SOLVE",excerpt:"How poor sleep destroys self-reflection.",url:"/solve#sleep"},
+  {title:"App blockers",label:"SYSTEMS",excerpt:"Remove digital distractions structurally.",url:"/systems#focus"},
+  {title:"Sleep routine",label:"SYSTEMS",excerpt:"A wind-down system for better sleep.",url:"/systems#sleep"},
+  {title:"Daily reflection system",label:"SYSTEMS",excerpt:"End-of-day structure to review your actions.",url:"/systems#reflection"},
+  {title:"Training attention",label:"TRAIN",excerpt:"Progressive exercises to rebuild sustained focus.",url:"/train#attention"},
+  {title:"Awareness training",label:"TRAIN",excerpt:"Notice unconscious patterns in your behavior.",url:"/train#awareness"},
+  {title:"Quotes on action",label:"QUOTES",excerpt:"Curated quotes on taking deliberate action.",url:"/quotes#action"},
+];
+function openSearch(){document.getElementById('overlay').classList.add('open');setTimeout(()=>document.getElementById('search-input').focus(),50);}
+function closeSearch(){document.getElementById('overlay').classList.remove('open');document.getElementById('search-input').value='';document.getElementById('search-results').innerHTML='<div class="s-empty">Start typing to search.</div>';}
+function outsideClick(e){if(e.target===document.getElementById('overlay'))closeSearch();}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSearch();});
+function doSearch(q){
+  const el=document.getElementById('search-results');
+  if(!q.trim()){el.innerHTML='<div class="s-empty">Start typing to search.</div>';return;}
+  const matches=DATA.filter(d=>d.title.toLowerCase().includes(q.toLowerCase())||d.excerpt.toLowerCase().includes(q.toLowerCase())||d.label.toLowerCase().includes(q.toLowerCase()));
+  el.innerHTML=matches.length?matches.map(d=>`<a href="${d.url}" class="s-item" onclick="closeSearch()"><div class="s-label">${d.label}</div><div class="s-title">${d.title}</div><div class="s-excerpt">${d.excerpt}</div></a>`).join(''):'<div class="s-empty">No results found.</div>';
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Systems - Synref</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    :root { --bg:#ffffff; --bg2:#f5f5f7; --text:#1d1d1f; --muted:#6e6e73; --border:rgba(0,0,0,0.1); }
+    body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); -webkit-font-smoothing:antialiased; }
+    a { text-decoration:none; color:inherit; }
+    nav { position:sticky; top:0; z-index:100; background:rgba(255,255,255,0.88); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border-bottom:0.5px solid var(--border); display:flex; align-items:center; justify-content:space-between; padding:0 2.5rem; height:52px; }
+    .nav-logo { display:flex; align-items:center; gap:9px; }
+    .nav-logo svg { width:26px; height:26px; }
+    .nav-logo-text { font-size:14px; font-weight:500; letter-spacing:0.18rem; }
+    .nav-links { display:flex; gap:2.2rem; list-style:none; }
+    .nav-links a { font-size:13px; color:var(--muted); transition:color 0.2s; }
+    .nav-links a:hover, .nav-links a.active { color:var(--text); }
+    .search-btn { display:flex; align-items:center; gap:6px; background:var(--bg2); border:0.5px solid var(--border); border-radius:20px; padding:6px 14px; font-size:13px; color:var(--muted); cursor:pointer; font-family:'DM Sans',sans-serif; transition:background 0.2s; }
+    .search-btn:hover { background:#ebebed; }
+    .search-btn svg { width:13px; height:13px; }
+    .search-overlay { display:none; position:fixed; inset:0; z-index:200; background:rgba(0,0,0,0.35); backdrop-filter:blur(4px); }
+    .search-overlay.open { display:flex; align-items:flex-start; justify-content:center; padding-top:10vh; }
+    .search-box { background:var(--bg); border-radius:16px; width:90%; max-width:580px; box-shadow:0 20px 60px rgba(0,0,0,0.15); overflow:hidden; }
+    .search-row { display:flex; align-items:center; gap:10px; padding:1rem 1.25rem; border-bottom:0.5px solid var(--border); }
+    .search-row svg { width:15px; height:15px; flex-shrink:0; }
+    #search-input { flex:1; border:none; outline:none; font-size:16px; font-family:'DM Sans',sans-serif; color:var(--text); background:transparent; }
+    #search-input::placeholder { color:var(--muted); }
+    .search-close { background:none; border:none; cursor:pointer; font-size:13px; color:var(--muted); font-family:'DM Sans',sans-serif; }
+    #search-results { max-height:380px; overflow-y:auto; }
+    .s-item { display:block; padding:0.85rem 1.25rem; border-bottom:0.5px solid var(--border); transition:background 0.15s; }
+    .s-item:hover { background:var(--bg2); }
+    .s-label { font-size:10px; letter-spacing:0.1rem; color:var(--muted); margin-bottom:2px; }
+    .s-title { font-size:14px; font-weight:500; margin-bottom:2px; }
+    .s-excerpt { font-size:12px; color:var(--muted); line-height:1.5; }
+    .s-empty { padding:2rem 1.25rem; text-align:center; font-size:14px; color:var(--muted); }
+    .page-hero { padding:6rem 2.5rem 4rem; border-bottom:0.5px solid var(--border); max-width:760px; margin:0 auto; }
+    .page-label { font-size:11px; letter-spacing:0.2rem; color:var(--muted); margin-bottom:1.25rem; }
+    .page-hero h1 { font-family:'DM Serif Display',serif; font-size:clamp(2.5rem,6vw,4rem); font-weight:400; line-height:1.1; margin-bottom:1.25rem; }
+    .page-hero p { font-size:18px; color:var(--muted); line-height:1.65; font-weight:300; }
+    .content { max-width:760px; margin:0 auto; padding:0 2.5rem; }
+    .item-card { border-bottom:0.5px solid var(--border); }
+    .item-header { display:flex; align-items:center; justify-content:space-between; padding:2rem 0; cursor:pointer; gap:1rem; }
+    .item-meta { flex:1; }
+    .item-tag { font-size:10px; letter-spacing:0.15rem; color:var(--muted); margin-bottom:0.4rem; }
+    .item-title { font-family:'DM Serif Display',serif; font-size:clamp(1.4rem,3vw,2rem); font-weight:400; line-height:1.15; transition:opacity 0.2s; }
+    .item-header:hover .item-title { opacity:0.7; }
+    .item-summary { font-size:14px; color:var(--muted); margin-top:0.4rem; font-weight:300; }
+    .chevron { width:20px; height:20px; flex-shrink:0; transition:transform 0.3s; }
+    .chevron.open { transform:rotate(180deg); }
+    .item-body { display:none; padding-bottom:2.5rem; }
+    .item-body.open { display:block; }
+    .step { display:flex; gap:1.25rem; margin-bottom:1.5rem; }
+    .step-num { font-size:12px; font-weight:500; color:var(--muted); min-width:24px; padding-top:2px; }
+    .step-content h4 { font-size:15px; font-weight:500; margin-bottom:0.3rem; }
+    .step-content p { font-size:15px; color:var(--muted); line-height:1.7; font-weight:300; }
+    .tool-row { display:flex; gap:0.75rem; flex-wrap:wrap; margin:1.5rem 0; }
+    .tool-tag { background:var(--bg2); border:0.5px solid var(--border); border-radius:980px; padding:6px 14px; font-size:12px; color:var(--text); }
+    .action-row { display:flex; gap:0.75rem; flex-wrap:wrap; margin-top:1.5rem; }
+    .btn { display:inline-block; padding:11px 22px; border-radius:980px; font-size:13px; font-family:'DM Sans',sans-serif; font-weight:400; transition:opacity 0.2s; border:0.5px solid var(--border); }
+    .btn:hover { opacity:0.7; }
+    .btn-dark { background:var(--text); color:var(--bg); border-color:var(--text); }
+    .btn-light { background:var(--bg); color:var(--text); }
+    footer { border-top:0.5px solid var(--border); padding:2rem 2.5rem; display:grid; grid-template-columns:1fr 1fr 1fr; align-items:center; margin-top:2rem; }
+    footer p { font-size:12px; color:var(--muted); }
+    footer p:nth-child(2) { text-align:center; }
+    footer p:nth-child(3) { text-align:right; }
+  </style>
+</head>
+<body>
+<nav>
+  <a href="/" class="nav-logo">
+    <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="14" cy="14" r="13" stroke="#1d1d1f" stroke-width="1.5"/>
+      <path d="M4 14 Q8 6 12 14 Q16 22 20 14 Q24 6 26 14" stroke="#1d1d1f" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    </svg>
+    <span class="nav-logo-text">SYNREF</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="/solve">Solve</a></li>
+    <li><a href="/systems" class="active">Systems</a></li>
+    <li><a href="/train">Train</a></li>
+    <li><a href="/quotes">Quotes</a></li>
+    <li><a href="/about">About</a></li>
+  </ul>
+  <button class="search-btn" onclick="openSearch()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    Search
+  </button>
+</nav>
+<div class="search-overlay" id="overlay" onclick="outsideClick(event)">
+  <div class="search-box">
+    <div class="search-row">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" id="search-input" placeholder="Search Synref..." oninput="doSearch(this.value)">
+      <button class="search-close" onclick="closeSearch()">Close</button>
+    </div>
+    <div id="search-results"><div class="s-empty">Start typing to search.</div></div>
+  </div>
+</div>
+
+<div class="page-hero">
+  <p class="page-label">SYSTEMS</p>
+  <h1>Structure your behavior.<br>Remove friction.<br>Make good defaults.</h1>
+  <p>Willpower is unreliable. Systems are not. Click a system to see exactly how to implement it.</p>
+</div>
+
+<div class="content">
+
+  <div class="item-card" id="focus">
+    <div class="item-header" onclick="toggle('body-focus','chev-focus')">
+      <div class="item-meta">
+        <div class="item-tag">FOCUS</div>
+        <div class="item-title">App blockers</div>
+        <div class="item-summary">Remove access to distraction at the source, not at the point of temptation.</div>
+      </div>
+      <svg id="chev-focus" class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+    </div>
+    <div class="item-body" id="body-focus">
+      <div class="step"><div class="step-num">01</div><div class="step-content"><h4>Delete social media apps from your phone</h4><p>Not disable. Delete. If you want to use them, use the browser version only. The extra friction of logging in on a browser significantly reduces impulsive use. Most people find they do not bother.</p></div></div>
+      <div class="step"><div class="step-num">02</div><div class="step-content"><h4>Install a website blocker on your computer</h4><p>Use a tool that blocks distracting websites during defined work hours. The key is to set it up in advance, when your intentions are clear, not in the moment when resistance is high.</p></div></div>
+      <div class="step"><div class="step-num">03</div><div class="step-content"><h4>Define your focus hours</h4><p>Decide when you will do deep work. Block those hours in your schedule. During those hours, your phone goes in another room and notifications are off. No exceptions on weekdays.</p></div></div>
+      <div class="step"><div class="step-num">04</div><div class="step-content"><h4>Replace the habit deliberately</h4><p>When you feel the urge to check your phone, you need a replacement behavior ready. A two-minute walk, writing one sentence in a notebook, or drinking water. The goal is to interrupt the automatic loop with something intentional.</p></div></div>
+      <div class="tool-row">
+        <span class="tool-tag">Freedom</span>
+        <span class="tool-tag">Cold Turkey</span>
+        <span class="tool-tag">One Sec (iOS)</span>
+        <span class="tool-tag">Digital Wellbeing (Android)</span>
+      </div>
+      <div class="action-row">
+        <a href="/solve#social-media" class="btn btn-dark">Problem: social media addiction</a>
+        <a href="/train#awareness" class="btn btn-light">Train awareness</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="item-card" id="sleep">
+    <div class="item-header" onclick="toggle('body-sleep','chev-sleep')">
+      <div class="item-meta">
+        <div class="item-tag">SLEEP</div>
+        <div class="item-title">Sleep routine</div>
+        <div class="item-summary">A consistent wind-down system that signals your brain to rest.</div>
+      </div>
+      <svg id="chev-sleep" class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+    </div>
+    <div class="item-body" id="body-sleep">
+      <div class="step"><div class="step-num">01</div><div class="step-content"><h4>Fix your wake time first</h4><p>Choose a wake time and commit to it every day including weekends. Your circadian rhythm is anchored by your wake time, not your bedtime. Everything else follows from this one decision.</p></div></div>
+      <div class="step"><div class="step-num">02</div><div class="step-content"><h4>Start your wind-down 60 minutes before bed</h4><p>At the same time each evening, dim the lights in your home. Lower light levels trigger melatonin production. This is a biological signal, not a comfort preference. It matters more than most people think.</p></div></div>
+      <div class="step"><div class="step-num">03</div><div class="step-content"><h4>No screens 30 minutes before sleep</h4><p>Blue light from screens suppresses melatonin directly. If you must use a screen, use night mode and reduce brightness to the minimum. Better: put the phone in another room. Read a physical book instead.</p></div></div>
+      <div class="step"><div class="step-num">04</div><div class="step-content"><h4>Keep your bedroom cool and dark</h4><p>Your core body temperature needs to drop slightly to initiate sleep. A cool room around 18 degrees Celsius accelerates this. Complete darkness removes light stimulation that keeps the brain alert.</p></div></div>
+      <div class="step"><div class="step-num">05</div><div class="step-content"><h4>Do a brief brain dump before bed</h4><p>Write down everything on your mind for five minutes. Unfinished tasks and unresolved thoughts are a major cause of difficulty falling asleep. Writing them down signals to your brain that they are captured and do not need to be held in working memory overnight.</p></div></div>
+      <div class="action-row">
+        <a href="/solve#sleep" class="btn btn-dark">Problem: sleep deprivation</a>
+        <a href="/train#sleep" class="btn btn-light">Train your sleep habits</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="item-card" id="reflection">
+    <div class="item-header" onclick="toggle('body-ref','chev-ref')">
+      <div class="item-meta">
+        <div class="item-tag">REFLECTION</div>
+        <div class="item-title">Daily reflection system</div>
+        <div class="item-summary">A simple end-of-day structure to review your actions and decisions.</div>
+      </div>
+      <svg id="chev-ref" class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+    </div>
+    <div class="item-body" id="body-ref">
+      <div class="step"><div class="step-num">01</div><div class="step-content"><h4>Set a fixed reflection time</h4><p>Choose a time that works every day, ideally the same 10 minutes each evening. Attach it to an existing habit such as after dinner or before brushing your teeth. Consistency matters more than duration.</p></div></div>
+      <div class="step"><div class="step-num">02</div><div class="step-content"><h4>Ask three questions</h4><p>What went well today and why? What did not go as intended and what caused it? What is one thing I will do differently tomorrow? Write the answers. Writing forces clarity that thinking alone does not.</p></div></div>
+      <div class="step"><div class="step-num">03</div><div class="step-content"><h4>Review weekly</h4><p>Once a week, read back your daily reflections. Look for patterns. Which problems repeat? Which intentions never become actions? The weekly review turns isolated observations into usable insight.</p></div></div>
+      <div class="step"><div class="step-num">04</div><div class="step-content"><h4>Keep it short</h4><p>Ten minutes maximum. The goal is not journaling for its own sake. It is extracting the signal from your day so you can act on it. Short and consistent beats long and occasional every time.</p></div></div>
+      <div class="action-row">
+        <a href="/train#awareness" class="btn btn-dark">Train self-awareness</a>
+        <a href="/quotes#reflection" class="btn btn-light">Quotes on reflection</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <p>Synref</p>
+  <p>Copyright 2026 Synref. All rights reserved.</p>
+  <p>Reflect. Decide. Act.</p>
+</footer>
+
+<script>
+function toggle(bodyId, chevId) {
+  const body = document.getElementById(bodyId);
+  const chev = document.getElementById(chevId);
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  chev.classList.toggle('open', !isOpen);
+}
+const DATA = [
+  {title:"Attention span",label:"SOLVE",excerpt:"Understand what fragments your focus.",url:"/solve#attention"},
+  {title:"Social media addiction",label:"SOLVE",excerpt:"Break the scroll loop with awareness.",url:"/solve#social-media"},
+  {title:"Sleep deprivation",label:"SOLVE",excerpt:"How poor sleep destroys self-reflection.",url:"/solve#sleep"},
+  {title:"App blockers",label:"SYSTEMS",excerpt:"Remove digital distractions structurally.",url:"/systems#focus"},
+  {title:"Sleep routine",label:"SYSTEMS",excerpt:"A wind-down system for better sleep.",url:"/systems#sleep"},
+  {title:"Daily reflection system",label:"SYSTEMS",excerpt:"End-of-day structure to review your actions.",url:"/systems#reflection"},
+  {title:"Training attention",label:"TRAIN",excerpt:"Progressive exercises to rebuild sustained focus.",url:"/train#attention"},
+  {title:"Awareness training",label:"TRAIN",excerpt:"Notice unconscious patterns in your behavior.",url:"/train#awareness"},
+  {title:"Quotes on action",label:"QUOTES",excerpt:"Curated quotes on taking deliberate action.",url:"/quotes#action"},
+  {title:"Quotes on reflection",label:"QUOTES",excerpt:"Curated quotes on self-awareness.",url:"/quotes#reflection"},
+];
+function openSearch(){document.getElementById('overlay').classList.add('open');setTimeout(()=>document.getElementById('search-input').focus(),50);}
+function closeSearch(){document.getElementById('overlay').classList.remove('open');document.getElementById('search-input').value='';document.getElementById('search-results').innerHTML='<div class="s-empty">Start typing to search.</div>';}
+function outsideClick(e){if(e.target===document.getElementById('overlay'))closeSearch();}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSearch();});
+function doSearch(q){
+  const el=document.getElementById('search-results');
+  if(!q.trim()){el.innerHTML='<div class="s-empty">Start typing to search.</div>';return;}
+  const matches=DATA.filter(d=>d.title.toLowerCase().includes(q.toLowerCase())||d.excerpt.toLowerCase().includes(q.toLowerCase())||d.label.toLowerCase().includes(q.toLowerCase()));
+  el.innerHTML=matches.length?matches.map(d=>`<a href="${d.url}" class="s-item" onclick="closeSearch()"><div class="s-label">${d.label}</div><div class="s-title">${d.title}</div><div class="s-excerpt">${d.excerpt}</div></a>`).join(''):'<div class="s-empty">No results found.</div>';
+}
+window.addEventListener('DOMContentLoaded', () => {
+  const hash = window.location.hash;
+  if (hash === '#focus') toggle('body-focus','chev-focus');
+  if (hash === '#sleep') toggle('body-sleep','chev-sleep');
+  if (hash === '#reflection') toggle('body-ref','chev-ref');
+});
+</script>
+</body>
+</html>
