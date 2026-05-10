@@ -6,6 +6,16 @@
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-S6CCHZ11G5"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    if (localStorage.getItem('cookies-accepted') === 'yes') {
+      gtag('config', 'G-S6CCHZ11G5');
+    }
+  </script>
   <style>
     *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
     :root { --bg:#ffffff; --bg2:#f5f5f7; --text:#1d1d1f; --muted:#6e6e73; --border:rgba(0,0,0,0.1); }
@@ -36,6 +46,11 @@
     .s-title { font-size:14px; font-weight:500; margin-bottom:2px; }
     .s-excerpt { font-size:12px; color:var(--muted); line-height:1.5; }
     .s-empty { padding:2rem 1.25rem; text-align:center; font-size:14px; color:var(--muted); }
+    footer { border-top:0.5px solid var(--border); padding:2rem 2.5rem; display:grid; grid-template-columns:1fr 1fr 1fr; align-items:center; margin-top:2rem; }
+    footer p { font-size:12px; color:var(--muted); }
+    footer p:nth-child(2) { text-align:center; }
+    footer p:nth-child(3) { text-align:right; }
+
     .page-hero { padding:6rem 2.5rem 4rem; border-bottom:0.5px solid var(--border); max-width:760px; margin:0 auto; }
     .page-label { font-size:11px; letter-spacing:0.2rem; color:var(--muted); margin-bottom:1.25rem; }
     .page-hero h1 { font-family:'DM Serif Display',serif; font-size:clamp(2.5rem,6vw,4rem); font-weight:400; line-height:1.1; margin-bottom:1.25rem; }
@@ -52,24 +67,32 @@
     .chevron.open { transform:rotate(180deg); }
     .item-body { display:none; padding-bottom:2.5rem; }
     .item-body.open { display:block; }
-    .week-block { margin-bottom:2rem; }
-    .week-label { font-size:11px; letter-spacing:0.1rem; color:var(--muted); margin-bottom:0.75rem; text-transform:uppercase; }
-    .week-block p { font-size:16px; color:var(--text); line-height:1.75; font-weight:300; }
-    .note-box { background:var(--bg2); border-radius:12px; padding:1.25rem 1.5rem; margin:0 0 1.75rem; }
-    .note-box p { font-size:14px; color:var(--muted); line-height:1.7; font-weight:300; }
+    .subsection { margin-bottom:1.75rem; }
+    .subsection h3 { font-size:11px; font-weight:500; letter-spacing:0.12rem; color:var(--muted); margin-bottom:0.6rem; text-transform:uppercase; }
+    .subsection p { font-size:16px; color:var(--text); line-height:1.75; font-weight:300; }
+    .impact-box { background:var(--bg2); border-radius:12px; padding:1.5rem 1.75rem; margin:1.75rem 0; border-left:2px solid var(--text); }
+    .impact-box p { font-size:15px; line-height:1.7; font-weight:300; }
+    .impact-box strong { font-weight:500; }
+    .quote-inline { padding:1.25rem 0; font-family:'DM Serif Display',serif; font-size:1.2rem; font-weight:400; color:var(--muted); font-style:italic; }
     .action-row { display:flex; gap:0.75rem; flex-wrap:wrap; margin-top:1.5rem; }
     .btn { display:inline-block; padding:11px 22px; border-radius:980px; font-size:13px; font-family:'DM Sans',sans-serif; font-weight:400; transition:opacity 0.2s; border:0.5px solid var(--border); }
     .btn:hover { opacity:0.7; }
     .btn-dark { background:var(--text); color:var(--bg); border-color:var(--text); }
     .btn-light { background:var(--bg); color:var(--text); }
-    footer { border-top:0.5px solid var(--border); padding:2rem 2.5rem; display:grid; grid-template-columns:1fr 1fr 1fr; align-items:center; margin-top:2rem; }
-    footer p { font-size:12px; color:var(--muted); }
-    footer p:nth-child(2) { text-align:center; }
-    footer p:nth-child(3) { text-align:right; }
+    .step { display:flex; gap:1.25rem; margin-bottom:1.5rem; }
+    .step-num { font-size:12px; font-weight:500; color:var(--muted); min-width:24px; padding-top:2px; }
+    .step-content h4 { font-size:15px; font-weight:500; margin-bottom:0.3rem; }
+    .step-content p { font-size:15px; color:var(--muted); line-height:1.7; font-weight:300; }
+    .tool-row { display:flex; gap:0.75rem; flex-wrap:wrap; margin:1.5rem 0; }
+    .tool-tag { background:var(--bg2); border:0.5px solid var(--border); border-radius:980px; padding:6px 14px; font-size:12px; color:var(--text); }
+    .note-box { background:var(--bg2); border-radius:12px; padding:1.25rem 1.5rem; margin:0 0 1.75rem; }
+    .note-box p { font-size:14px; color:var(--muted); line-height:1.7; font-weight:300; }
+    .week-block { margin-bottom:2rem; }
+    .week-label { font-size:11px; letter-spacing:0.1rem; color:var(--muted); margin-bottom:0.75rem; text-transform:uppercase; }
+    .week-block p { font-size:16px; color:var(--text); line-height:1.75; font-weight:300; }
   </style>
 </head>
-<body>
-<nav>
+<body><nav>
   <a href="/" class="nav-logo">
     <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
       <circle cx="14" cy="14" r="13" stroke="#1d1d1f" stroke-width="1.5"/>
@@ -78,9 +101,10 @@
     <span class="nav-logo-text">SYNREF</span>
   </a>
   <ul class="nav-links">
+    <li><a href="/reflect">Reflect</a></li>
     <li><a href="/solve">Solve</a></li>
     <li><a href="/systems">Systems</a></li>
-    <li><a href="/train" class="active">Train</a></li>
+    <li><a href="/train"  class="active">Train</a></li>
     <li><a href="/quotes">Quotes</a></li>
     <li><a href="/about">About</a></li>
   </ul>
@@ -88,8 +112,7 @@
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     Search
   </button>
-</nav>
-<div class="search-overlay" id="overlay" onclick="outsideClick(event)">
+</nav><div class="search-overlay" id="overlay" onclick="outsideClick(event)">
   <div class="search-box">
     <div class="search-row">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
@@ -99,98 +122,84 @@
     <div id="search-results"><div class="s-empty">Start typing to search.</div></div>
   </div>
 </div>
-
 <div class="page-hero">
   <p class="page-label">TRAIN</p>
   <h1>Build the capacity.<br>One week at a time.</h1>
   <p>Training is not motivation. It is progressive, deliberate practice applied consistently over time.</p>
 </div>
-
 <div class="content">
 
   <div class="item-card" id="attention">
-    <div class="item-header" onclick="toggle('body-att','chev-att')">
-      <div class="item-meta">
-        <div class="item-tag">FOCUS</div>
-        <div class="item-title">Train your attention span</div>
-        <div class="item-summary">A four-week protocol to rebuild sustained focus from the ground up.</div>
-      </div>
-      <svg id="chev-att" class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+    <div class="item-header" onclick="toggle('bta','cta')">
+      <div class="item-meta"><div class="item-tag">FOCUS</div><div class="item-title">Train your attention span</div><div class="item-summary">A four-week protocol to rebuild sustained focus from the ground up.</div></div>
+      <svg id="cta" class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
     </div>
-    <div class="item-body" id="body-att">
+    <div class="item-body" id="bta">
       <div class="note-box"><p>The principle: your attention span is a muscle. It has atrophied from years of low-resistance, high-stimulation input. To rebuild it, you apply progressive overload: start below your current capacity, then increase the demand weekly. Do not skip ahead.</p></div>
       <div class="week-block"><div class="week-label">Week 1</div><p>Work in 20-minute focused blocks with no interruptions. Phone in another room. One task only. After 20 minutes, take a 5-minute break where you do not look at a screen. Repeat twice per day. The goal this week is simply to build the habit of starting.</p></div>
-      <div class="week-block"><div class="week-label">Week 2</div><p>Extend to 30-minute blocks. Add one block per day so you are doing three per day. If 30 minutes feels too short, that is a good sign. Do not extend yet. Consistency over intensity at this stage.</p></div>
-      <div class="week-block"><div class="week-label">Week 3</div><p>Move to 45-minute blocks. Introduce one deep work session per day of 90 minutes where you do your most cognitively demanding work. This is where you begin to experience what real focus feels like.</p></div>
+      <div class="week-block"><div class="week-label">Week 2</div><p>Extend to 30-minute blocks. Add one block per day so you are doing three per day. Consistency over intensity at this stage.</p></div>
+      <div class="week-block"><div class="week-label">Week 3</div><p>Move to 45-minute blocks. Introduce one deep work session per day of 90 minutes where you do your most cognitively demanding work.</p></div>
       <div class="week-block"><div class="week-label">Week 4 and beyond</div><p>Standard sessions of 50 minutes with 10-minute breaks. Your target is two to three 90-minute deep work sessions per day as a long-term baseline.</p></div>
-      <div class="action-row">
-        <a href="/solve#attention" class="btn btn-dark">Problem: attention span</a>
-        <a href="/systems#focus" class="btn btn-light">Systems for focus</a>
-      </div>
+      <div class="action-row"><a href="/solve#attention" class="btn btn-dark">Problem: attention span</a><a href="/systems#focus" class="btn btn-light">Systems for focus</a></div>
     </div>
   </div>
 
   <div class="item-card" id="awareness">
-    <div class="item-header" onclick="toggle('body-aw','chev-aw')">
-      <div class="item-meta">
-        <div class="item-tag">SELF-AWARENESS</div>
-        <div class="item-title">Train self-awareness</div>
-        <div class="item-summary">Learn to notice your own unconscious patterns before they run your behavior.</div>
-      </div>
-      <svg id="chev-aw" class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+    <div class="item-header" onclick="toggle('btaw','ctaw')">
+      <div class="item-meta"><div class="item-tag">SELF-AWARENESS</div><div class="item-title">Train self-awareness</div><div class="item-summary">Learn to notice your own unconscious patterns before they run your behavior.</div></div>
+      <svg id="ctaw" class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
     </div>
-    <div class="item-body" id="body-aw">
-      <div class="note-box"><p>Most people believe they are self-aware. Research consistently shows they are wrong. Self-awareness is not a trait you either have or do not have. It is a skill that improves with deliberate practice. The starting point is learning to observe yourself without immediately judging what you see.</p></div>
-      <div class="week-block"><div class="week-label">Practice 1: The pause</div><p>Before any significant decision or reaction, pause for ten seconds. Ask yourself: what am I about to do, and why? This single habit interrupts the automatic pilot loop more effectively than almost anything else. It sounds trivial. It is not.</p></div>
-      <div class="week-block"><div class="week-label">Practice 2: The end-of-day review</div><p>Each evening, write answers to three questions. What did I do today that aligned with my values? What did I do that did not? What triggered my worst responses today? Do this for 30 days without skipping. Patterns will emerge that you cannot see in the moment.</p></div>
-      <div class="week-block"><div class="week-label">Practice 3: Trigger mapping</div><p>Choose one behavior you want to change. Each time it happens, note what preceded it. What were you doing, feeling, or thinking immediately before? After two weeks, you will know your triggers with enough precision to design around them.</p></div>
-      <div class="week-block"><div class="week-label">Practice 4: Seek accurate feedback</div><p>Ask two people you trust to tell you one thing you do that undermines your effectiveness. Most people never ask this question. The answers are consistently more useful than months of solo reflection.</p></div>
-      <div class="action-row">
-        <a href="/systems#reflection" class="btn btn-dark">Daily reflection system</a>
-        <a href="/quotes#reflection" class="btn btn-light">Quotes on reflection</a>
-      </div>
+    <div class="item-body" id="btaw">
+      <div class="note-box"><p>Most people believe they are self-aware. Research consistently shows they are wrong. Self-awareness is a skill that improves with deliberate practice. The starting point is learning to observe yourself without immediately judging what you see.</p></div>
+      <div class="week-block"><div class="week-label">Practice 1: The pause</div><p>Before any significant decision or reaction, pause for ten seconds. Ask yourself: what am I about to do, and why? This single habit interrupts the automatic pilot loop more effectively than almost anything else.</p></div>
+      <div class="week-block"><div class="week-label">Practice 2: The end-of-day review</div><p>Each evening, write answers to three questions. What did I do today that aligned with my values? What did I do that did not? What triggered my worst responses today? Do this for 30 days without skipping.</p></div>
+      <div class="week-block"><div class="week-label">Practice 3: Trigger mapping</div><p>Choose one behavior you want to change. Each time it happens, note what preceded it. After two weeks, you will know your triggers with enough precision to design around them.</p></div>
+      <div class="week-block"><div class="week-label">Practice 4: Seek accurate feedback</div><p>Ask two people you trust to tell you one thing you do that undermines your effectiveness. The answers are consistently more useful than months of solo reflection.</p></div>
+      <div class="action-row"><a href="/systems#reflection" class="btn btn-dark">Daily reflection system</a><a href="/quotes#reflection" class="btn btn-light">Quotes on reflection</a></div>
     </div>
   </div>
 
   <div class="item-card" id="sleep">
-    <div class="item-header" onclick="toggle('body-sl','chev-sl')">
-      <div class="item-meta">
-        <div class="item-tag">SLEEP</div>
-        <div class="item-title">Build your sleep habits</div>
-        <div class="item-summary">A practical protocol for resetting your sleep, one week at a time.</div>
-      </div>
-      <svg id="chev-sl" class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+    <div class="item-header" onclick="toggle('btsl','ctsl')">
+      <div class="item-meta"><div class="item-tag">SLEEP</div><div class="item-title">Build your sleep habits</div><div class="item-summary">A practical protocol for resetting your sleep, one week at a time.</div></div>
+      <svg id="ctsl" class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
     </div>
-    <div class="item-body" id="body-sl">
-      <div class="note-box"><p>You cannot negotiate with biology. Your circadian rhythm operates on a 24-hour cycle anchored by light and timing. Every inconsistency you introduce costs you cognitive performance the next day. The training here is behavioral, not motivational.</p></div>
-      <div class="week-block"><div class="week-label">Week 1: Anchor your wake time</div><p>Choose a single wake time and commit to it for seven consecutive days including the weekend. Do not adjust it based on how late you went to bed. This is the hardest week. Your body is recalibrating. The sleep quality from day five onward will noticeably improve.</p></div>
-      <div class="week-block"><div class="week-label">Week 2: Build the wind-down</div><p>Add a 45-minute wind-down before your target bedtime. Dim lights, no stimulating content, no social media. The activity should be calm and repeatable: reading, light stretching, journaling. Do the same thing in the same order each night. Your brain learns to associate the sequence with sleep.</p></div>
-      <div class="week-block"><div class="week-label">Week 3: Optimize the environment</div><p>Make your bedroom as dark and cool as possible. Remove all screens from the bedroom. If your phone is your alarm, buy a separate alarm clock. The bedroom should be a place your brain associates only with sleep.</p></div>
-      <div class="week-block"><div class="week-label">Week 4: Protect your morning</div><p>Do not check your phone for the first 30 minutes after waking. Get natural light within the first hour, ideally through a short walk outside. Morning light exposure is the single most powerful signal you can give your circadian rhythm that the day has started.</p></div>
-      <div class="action-row">
-        <a href="/solve#sleep" class="btn btn-dark">Problem: sleep deprivation</a>
-        <a href="/systems#sleep" class="btn btn-light">Sleep system</a>
-      </div>
+    <div class="item-body" id="btsl">
+      <div class="note-box"><p>You cannot negotiate with biology. Your circadian rhythm operates on a 24-hour cycle anchored by light and timing. Every inconsistency you introduce costs you cognitive performance the next day.</p></div>
+      <div class="week-block"><div class="week-label">Week 1: Anchor your wake time</div><p>Choose a single wake time and commit to it for seven consecutive days including the weekend. Do not adjust it based on how late you went to bed. The sleep quality from day five onward will noticeably improve.</p></div>
+      <div class="week-block"><div class="week-label">Week 2: Build the wind-down</div><p>Add a 45-minute wind-down before your target bedtime. Dim lights, no stimulating content, no social media. Do the same thing in the same order each night.</p></div>
+      <div class="week-block"><div class="week-label">Week 3: Optimize the environment</div><p>Make your bedroom as dark and cool as possible. Remove all screens from the bedroom. The bedroom should be a place your brain associates only with sleep.</p></div>
+      <div class="week-block"><div class="week-label">Week 4: Protect your morning</div><p>Do not check your phone for the first 30 minutes after waking. Get natural light within the first hour, ideally through a short walk outside. Morning light exposure is the single most powerful signal you can give your circadian rhythm.</p></div>
+      <div class="action-row"><a href="/solve#sleep" class="btn btn-dark">Problem: sleep deprivation</a><a href="/systems#sleep" class="btn btn-light">Sleep system</a></div>
     </div>
   </div>
 
-</div>
-
-<footer>
+</div><footer>
   <p>Synref</p>
   <p>Copyright 2026 Synref. All rights reserved.</p>
   <p>Reflect. Decide. Act.</p>
-</footer>
-
+</footer><div id="cookie-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:500;background:#1d1d1f;color:#f5f5f7;padding:1rem 2.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;font-family:'DM Sans',sans-serif;font-size:13px;">
+  <p style="margin:0;font-weight:300;line-height:1.5;">Synref uses cookies to understand how visitors use this site. No personal data is sold or shared.</p>
+  <div style="display:flex;gap:0.75rem;flex-shrink:0;">
+    <button onclick="acceptCookies()" style="background:#ffffff;color:#1d1d1f;border:none;padding:8px 18px;border-radius:980px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;">Accept</button>
+    <button onclick="declineCookies()" style="background:transparent;color:#a1a1a6;border:1px solid #424245;padding:8px 18px;border-radius:980px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;">Decline</button>
+  </div>
+</div>
 <script>
-function toggle(bodyId, chevId) {
-  const body = document.getElementById(bodyId);
-  const chev = document.getElementById(chevId);
-  const isOpen = body.classList.contains('open');
-  body.classList.toggle('open', !isOpen);
-  chev.classList.toggle('open', !isOpen);
-}
+(function(){
+  const s = localStorage.getItem('cookies-accepted');
+  if (!s) document.getElementById('cookie-banner').style.display = 'flex';
+})();
+function acceptCookies(){localStorage.setItem('cookies-accepted','yes');document.getElementById('cookie-banner').style.display='none';gtag('config','G-S6CCHZ11G5');}
+function declineCookies(){localStorage.setItem('cookies-accepted','no');document.getElementById('cookie-banner').style.display='none';}
+</script><script>
 const DATA = [
+  {title:"What is self-reflection",label:"REFLECT",excerpt:"The difference between rumination and real reflection.",url:"/reflect#what-is-reflection"},
+  {title:"Six reflection methods",label:"REFLECT",excerpt:"Concrete techniques with practical instructions.",url:"/reflect#methods"},
+  {title:"The Three Questions method",label:"REFLECT",excerpt:"Daily end-of-day review that builds a feedback loop.",url:"/reflect#methods"},
+  {title:"Trigger mapping",label:"REFLECT",excerpt:"Identify the root cause of recurring behavior.",url:"/reflect#methods"},
+  {title:"From insight to action",label:"REFLECT",excerpt:"Why reflection without commitment produces nothing.",url:"/reflect#from-insight-to-action"},
+  {title:"The four mistakes",label:"REFLECT",excerpt:"What makes reflection useless.",url:"/reflect#common-mistakes"},
   {title:"Attention span",label:"SOLVE",excerpt:"Understand what fragments your focus.",url:"/solve#attention"},
   {title:"Social media addiction",label:"SOLVE",excerpt:"Break the scroll loop with awareness.",url:"/solve#social-media"},
   {title:"Sleep deprivation",label:"SOLVE",excerpt:"How poor sleep destroys self-reflection.",url:"/solve#sleep"},
@@ -199,7 +208,11 @@ const DATA = [
   {title:"Daily reflection system",label:"SYSTEMS",excerpt:"End-of-day structure to review your actions.",url:"/systems#reflection"},
   {title:"Training attention",label:"TRAIN",excerpt:"Progressive exercises to rebuild sustained focus.",url:"/train#attention"},
   {title:"Awareness training",label:"TRAIN",excerpt:"Notice unconscious patterns in your behavior.",url:"/train#awareness"},
+  {title:"Sleep training",label:"TRAIN",excerpt:"A four-week protocol for resetting your sleep.",url:"/train#sleep"},
   {title:"Quotes on action",label:"QUOTES",excerpt:"Curated quotes on taking deliberate action.",url:"/quotes#action"},
+  {title:"Quotes on reflection",label:"QUOTES",excerpt:"Curated quotes on self-awareness.",url:"/quotes#reflection"},
+  {title:"Quotes on growth",label:"QUOTES",excerpt:"Curated quotes on becoming more.",url:"/quotes#growth"},
+  {title:"About Synref",label:"ABOUT",excerpt:"The philosophy and meaning behind Synref.",url:"/about"},
 ];
 function openSearch(){document.getElementById('overlay').classList.add('open');setTimeout(()=>document.getElementById('search-input').focus(),50);}
 function closeSearch(){document.getElementById('overlay').classList.remove('open');document.getElementById('search-input').value='';document.getElementById('search-results').innerHTML='<div class="s-empty">Start typing to search.</div>';}
@@ -211,12 +224,8 @@ function doSearch(q){
   const matches=DATA.filter(d=>d.title.toLowerCase().includes(q.toLowerCase())||d.excerpt.toLowerCase().includes(q.toLowerCase())||d.label.toLowerCase().includes(q.toLowerCase()));
   el.innerHTML=matches.length?matches.map(d=>`<a href="${d.url}" class="s-item" onclick="closeSearch()"><div class="s-label">${d.label}</div><div class="s-title">${d.title}</div><div class="s-excerpt">${d.excerpt}</div></a>`).join(''):'<div class="s-empty">No results found.</div>';
 }
-window.addEventListener('DOMContentLoaded', () => {
-  const hash = window.location.hash;
-  if (hash === '#attention') toggle('body-att','chev-att');
-  if (hash === '#awareness') toggle('body-aw','chev-aw');
-  if (hash === '#sleep') toggle('body-sl','chev-sl');
-});
+function toggle(b,c){const body=document.getElementById(b),chev=document.getElementById(c),open=body.classList.contains('open');body.classList.toggle('open',!open);chev.classList.toggle('open',!open);}
+window.addEventListener('DOMContentLoaded',()=>{const h=window.location.hash;if(h==='#attention')toggle('bta','cta');if(h==='#awareness')toggle('btaw','ctaw');if(h==='#sleep')toggle('btsl','ctsl');});
 </script>
 </body>
 </html>
