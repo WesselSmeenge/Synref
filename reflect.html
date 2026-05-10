@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reflect - Synref</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    :root { --bg:#ffffff; --bg2:#f5f5f7; --text:#1d1d1f; --muted:#6e6e73; --border:rgba(0,0,0,0.1); }
+    body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); -webkit-font-smoothing:antialiased; }
+    a { text-decoration:none; color:inherit; }
+    nav { position:sticky; top:0; z-index:100; background:rgba(255,255,255,0.88); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border-bottom:0.5px solid var(--border); display:flex; align-items:center; justify-content:space-between; padding:0 2.5rem; height:52px; }
+    .nav-logo { display:flex; align-items:center; gap:9px; }
+    .nav-logo svg { width:26px; height:26px; }
+    .nav-logo-text { font-size:14px; font-weight:500; letter-spacing:0.18rem; }
+    .nav-links { display:flex; gap:2.2rem; list-style:none; }
+    .nav-links a { font-size:13px; color:var(--muted); transition:color 0.2s; }
+    .nav-links a:hover, .nav-links a.active { color:var(--text); }
+    .search-btn { display:flex; align-items:center; gap:6px; background:var(--bg2); border:0.5px solid var(--border); border-radius:20px; padding:6px 14px; font-size:13px; color:var(--muted); cursor:pointer; font-family:'DM Sans',sans-serif; transition:background 0.2s; }
+    .search-btn:hover { background:#ebebed; }
+    .search-btn svg { width:13px; height:13px; }
+    .search-overlay { display:none; position:fixed; inset:0; z-index:200; background:rgba(0,0,0,0.35); backdrop-filter:blur(4px); }
+    .search-overlay.open { display:flex; align-items:flex-start; justify-content:center; padding-top:10vh; }
+    .search-box { background:var(--bg); border-radius:16px; width:90%; max-width:580px; box-shadow:0 20px 60px rgba(0,0,0,0.15); overflow:hidden; }
+    .search-row { display:flex; align-items:center; gap:10px; padding:1rem 1.25rem; border-bottom:0.5px solid var(--border); }
+    .search-row svg { width:15px; height:15px; flex-shrink:0; }
+    #search-input { flex:1; border:none; outline:none; font-size:16px; font-family:'DM Sans',sans-serif; color:var(--text); background:transparent; }
+    #search-input::placeholder { color:var(--muted); }
+    .search-close { background:none; border:none; cursor:pointer; font-size:13px; color:var(--muted); font-family:'DM Sans',sans-serif; }
+    #search-results { max-height:380px; overflow-y:auto; }
+    .s-item { display:block; padding:0.85rem 1.25rem; border-bottom:0.5px solid var(--border); transition:background 0.15s; }
+    .s-item:hover { background:var(--bg2); }
+    .s-label { font-size:10px; letter-spacing:0.1rem; color:var(--muted); margin-bottom:2px; }
+    .s-title { font-size:14px; font-weight:500; margin-bottom:2px; }
+    .s-excerpt { font-size:12px; color:var(--muted); line-height:1.5; }
+    .s-empty { padding:2rem 1.25rem; text-align:center; font-size:14px; color:var(--muted); }
+
+    .page-hero { padding:6rem 2.5rem 4rem; border-bottom:0.5px solid var(--border); max-width:760px; margin:0 auto; }
+    .page-label { font-size:11px; letter-spacing:0.2rem; color:var(--muted); margin-bottom:1.25rem; }
+    .page-hero h1 { font-family:'DM Serif Display',serif; font-size:clamp(2.5rem,6vw,4rem); font-weight:400; line-height:1.1; margin-bottom:1.25rem; }
+    .page-hero p { font-size:18px; color:var(--muted); line-height:1.65; font-weight:300; max-width:580px; }
+
+    .content { max-width:760px; margin:0 auto; padding:0 2.5rem; }
+
+    /* Chapter blocks */
+    .chapter { padding:4rem 0; border-bottom:0.5px solid var(--border); }
+    .chapter-label { font-size:11px; letter-spacing:0.2rem; color:var(--muted); margin-bottom:1.5rem; }
+    .chapter h2 { font-family:'DM Serif Display',serif; font-size:clamp(1.8rem,4vw,2.6rem); font-weight:400; line-height:1.15; margin-bottom:1.5rem; }
+    .chapter p { font-size:16px; color:var(--text); line-height:1.8; font-weight:300; margin-bottom:1.25rem; }
+    .chapter p:last-child { margin-bottom:0; }
+    .chapter p strong { font-weight:500; color:var(--text); }
+
+    /* Pull quote */
+    .pull-quote { font-family:'DM Serif Display',serif; font-size:clamp(1.3rem,2.5vw,1.7rem); font-weight:400; line-height:1.4; color:var(--text); border-left:2px solid var(--text); padding-left:1.5rem; margin:2rem 0; }
+
+    /* Method cards — collapsible */
+    .methods { margin-top:2rem; }
+    .method-card { border-top:0.5px solid var(--border); }
+    .method-header { display:flex; align-items:center; justify-content:space-between; padding:1.5rem 0; cursor:pointer; gap:1rem; }
+    .method-header:hover .method-name { opacity:0.7; }
+    .method-meta { flex:1; }
+    .method-num { font-size:10px; letter-spacing:0.12rem; color:var(--muted); margin-bottom:0.3rem; }
+    .method-name { font-size:17px; font-weight:500; transition:opacity 0.2s; }
+    .method-desc { font-size:13px; color:var(--muted); margin-top:0.25rem; font-weight:300; }
+    .chevron { width:18px; height:18px; flex-shrink:0; transition:transform 0.3s; }
+    .chevron.open { transform:rotate(180deg); }
+    .method-body { display:none; padding-bottom:2rem; }
+    .method-body.open { display:block; }
+    .method-body p { font-size:16px; color:var(--text); line-height:1.8; font-weight:300; margin-bottom:1.25rem; }
+    .method-body p:last-child { margin-bottom:0; }
+    .method-body strong { font-weight:500; }
+    .method-example { background:var(--bg2); border-radius:12px; padding:1.25rem 1.5rem; margin:1.25rem 0; }
+    .method-example-label { font-size:10px; letter-spacing:0.1rem; color:var(--muted); margin-bottom:0.5rem; }
+    .method-example p { font-size:14px; color:var(--text); line-height:1.7; font-weight:300; margin:0; }
+
+    /* Insight boxes */
+    .insight { background:var(--bg2); border-radius:12px; padding:1.5rem 1.75rem; margin:2rem 0; border-left:2px solid var(--text); }
+    .insight p { font-size:15px; line-height:1.7; font-weight:300; }
+    .insight strong { font-weight:500; }
+
+    /* Action grid */
+    .next-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1px; background:var(--border); border:0.5px solid var(--border); border-radius:16px; overflow:hidden; margin-top:2rem; }
+    .next-card { background:var(--bg); padding:1.75rem 1.5rem; display:block; transition:background 0.15s; }
+    .next-card:hover { background:var(--bg2); }
+    .next-tag { font-size:10px; letter-spacing:0.1rem; color:var(--muted); margin-bottom:0.75rem; }
+    .next-card h3 { font-size:15px; font-weight:500; margin-bottom:0.4rem; }
+    .next-card p { font-size:13px; color:var(--muted); line-height:1.55; }
+
+    footer { border-top:0.5px solid var(--border); padding:2rem 2.5rem; display:grid; grid-template-columns:1fr 1fr 1fr; align-items:center; margin-top:2rem; }
+    footer p { font-size:12px; color:var(--muted); }
+    footer p:nth-child(2) { text-align:center; }
+    footer p:nth-child(3) { text-align:right; }
+  </style>
+</head>
+<body>
+<nav>
+  <a href="/" class="nav-logo">
+    <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="14" cy="14" r="13" stroke="#1d1d1f" stroke-width="1.5"/>
+      <path d="M4 14 Q8 6 12 14 Q16 22 20 14 Q24 6 26 14" stroke="#1d1d1f" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    </svg>
+    <span class="nav-logo-text">SYNREF</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="/reflect" class="active">Reflect</a></li>
+    <li><a href="/solve">Solve</a></li>
+    <li><a href="/systems">Systems</a></li>
+    <li><a href="/train">Train</a></li>
+    <li><a href="/quotes">Quotes</a></li>
+    <li><a href="/about">About</a></li>
+  </ul>
+  <button class="search-btn" onclick="openSearch()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    Search
+  </button>
+</nav>
+
+<div class="search-overlay" id="overlay" onclick="outsideClick(event)">
+  <div class="search-box">
+    <div class="search-row">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" id="search-input" placeholder="Search Synref..." oninput="doSearch(this.value)">
+      <button class="search-close" onclick="closeSearch()">Close</button>
+    </div>
+    <div id="search-results"><div class="s-empty">Start typing to search.</div></div>
+  </div>
+</div>
+
+<div class="page-hero">
+  <p class="page-label">REFLECT</p>
+  <h1>The skill most people think they have.</h1>
+  <p>Self-reflection is not thinking about your day. It is a structured process of honest examination that produces insight you can act on. Almost nobody does it correctly. This page teaches you how.</p>
+</div>
+
+<div class="content">
+
+  <!-- CHAPTER 1 -->
+  <div class="chapter" id="what-is-reflection">
+    <p class="chapter-label">PART 01</p>
+    <h2>What self-reflection actually is — and what it is not</h2>
+    <p>Most people confuse rumination with reflection. Rumination is replaying events in your head without resolution — the same thought circling on a loop, generating anxiety but no clarity. Reflection is different. It is a deliberate, structured examination of your own thinking, behavior, and decisions, with the specific goal of extracting actionable insight.</p>
+    <p>The distinction matters because rumination makes things worse. It amplifies negative emotion without producing understanding. Reflection, when done correctly, reduces emotional noise and increases clarity. The difference is not what you think about. It is how you think about it.</p>
+
+    <div class="pull-quote">Thinking about yourself is not the same as thinking clearly about yourself.</div>
+
+    <p>True self-reflection requires three conditions that most people never meet simultaneously. First, it requires distance — enough emotional separation from an event to examine it without being consumed by it. Second, it requires honesty — the willingness to see what is actually there, not what you wish were there. Third, it requires structure — a framework that guides your thinking toward insight rather than letting it spiral.</p>
+    <p>Without distance, you react. Without honesty, you rationalize. Without structure, you ruminate. Self-reflection is what happens when all three are present at once.</p>
+
+    <div class="insight">
+      <p><strong>The core misunderstanding:</strong> Most people believe they reflect regularly because they think about their problems. But thinking about a problem and examining your role in creating it are entirely different activities. One produces empathy with yourself. The other produces understanding.</p>
+    </div>
+  </div>
+
+  <!-- CHAPTER 2 -->
+  <div class="chapter" id="why-it-matters">
+    <p class="chapter-label">PART 02</p>
+    <h2>Why self-reflection is the root skill</h2>
+    <p>Every problem on this site — poor focus, social media addiction, sleep deprivation, procrastination — has a reflection component. Not because reflection fixes everything, but because you cannot change what you cannot clearly see. Reflection is the instrument of perception. Without it, you are operating on assumptions about yourself that may be years out of date.</p>
+    <p>Research on high performance consistently identifies self-awareness as the differentiating factor between people who improve and people who plateau. The mechanism is straightforward: people who reflect accurately on their own behavior can identify what is not working and change it. People who do not reflect keep repeating the same patterns while expecting different results.</p>
+
+    <div class="pull-quote">You cannot navigate a map you have never looked at.</div>
+
+    <p>The compounding effect of consistent reflection is significant. Someone who reflects honestly every day for a year will identify and correct dozens of behavioral patterns that an unreflective person will repeat indefinitely. The gap between these two people widens over time, not because of intelligence or talent, but because one has a feedback loop and the other does not.</p>
+    <p>This is what Synref is built around. Not motivation. Not inspiration. A feedback loop — structured, honest, and actionable.</p>
+  </div>
+
+  <!-- CHAPTER 3: METHODS -->
+  <div class="chapter" id="methods">
+    <p class="chapter-label">PART 03</p>
+    <h2>How to reflect — six methods that work</h2>
+    <p>There is no single correct way to reflect. Different methods work for different situations. What they share is structure: a defined set of questions or constraints that prevent your thinking from collapsing into rumination. Below are six methods, each with a specific use case and practical instructions.</p>
+
+    <div class="methods">
+
+      <div class="method-card">
+        <div class="method-header" onclick="toggle('m1','c1')">
+          <div class="method-meta">
+            <div class="method-num">METHOD 01</div>
+            <div class="method-name">The Three Questions</div>
+            <div class="method-desc">Daily end-of-day review. Takes 10 minutes. The foundation of consistent reflection.</div>
+          </div>
+          <svg id="c1" class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </div>
+        <div class="method-body" id="m1">
+          <p>This is the simplest and most important reflection practice. Done every day, it produces more insight than any complex journaling system. The three questions are fixed. You do not modify them. You write the answers — never just think them, because thinking without writing allows you to skip the parts that are uncomfortable.</p>
+          <p><strong>Question 1: What went well today, and why?</strong> Not what happened — why it worked. This builds understanding of what conditions produce your best performance.</p>
+          <p><strong>Question 2: What did not go as intended, and what was my role in that?</strong> The second part of this question is the one most people skip. External factors matter less than your own contribution to the outcome.</p>
+          <p><strong>Question 3: What is one specific thing I will do differently tomorrow?</strong> One thing. Not a list. If you cannot name one concrete change, your reflection has not gone deep enough.</p>
+          <div class="method-example">
+            <div class="method-example-label">EXAMPLE</div>
+            <p>What went well: I finished the work block without checking my phone. Why: I had left it in the other room and removed the trigger entirely. What did not go as intended: I got into an unproductive argument. My role: I responded before I had thought clearly. One change tomorrow: when I feel defensive, I will wait 30 seconds before responding.</p>
+          </div>
+          <p>Do this for 30 consecutive days. By day 10 you will begin seeing patterns in your answers. By day 30 those patterns will be undeniable.</p>
+        </div>
+      </div>
+
+      <div class="method-card">
+        <div class="method-header" onclick="toggle('m2','c2')">
+          <div class="method-meta">
+            <div class="method-num">METHOD 02</div>
+            <div class="method-name">Trigger mapping</div>
+            <div class="method-desc">For identifying the root cause of a recurring behavior you want to change.</div>
+          </div>
+          <svg id="c2" class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </div>
+        <div class="method-body" id="m2">
+          <p>Most behavioral change fails because people try to fight the behavior rather than understanding what causes it. Trigger mapping makes the invisible visible: it identifies the precise conditions — thoughts, emotions, times, environments — that reliably precede an unwanted behavior.</p>
+          <p><strong>How to do it:</strong> Choose one behavior you want to change. For two weeks, every time the behavior happens, immediately write down four things: where you were, what you were doing, what you were feeling, and what you were thinking in the moments before. Do not analyze yet. Just record.</p>
+          <p>After two weeks, read back your notes and look for patterns. You will find them. The trigger is almost always one of: a specific emotional state, a specific environment, a specific time of day, or a specific social context. Once you know the trigger, you can design around it instead of relying on willpower to resist it.</p>
+          <div class="method-example">
+            <div class="method-example-label">EXAMPLE</div>
+            <p>Behavior: opening Instagram without deciding to. After two weeks of mapping: it happens almost exclusively when I sit down at my desk before starting work, when I feel a low-level resistance to the task ahead. The trigger is not boredom — it is avoidance of discomfort. Solution: change the first action when sitting down (open a document, not a browser) and address the task avoidance directly.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="method-card">
+        <div class="method-header" onclick="toggle('m3','c3')">
+          <div class="method-meta">
+            <div class="method-num">METHOD 03</div>
+            <div class="method-name">The 10-10-10 method</div>
+            <div class="method-desc">For decisions. Creates temporal distance to see clearly under pressure.</div>
+          </div>
+          <svg id="c3" class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </div>
+        <div class="method-body" id="m3">
+          <p>Developed by writer Suzy Welch, this method creates artificial temporal distance that allows you to see a decision more clearly. Most poor decisions feel urgent in the moment. The 10-10-10 method interrupts that urgency by forcing you to consider multiple time horizons simultaneously.</p>
+          <p><strong>How to do it:</strong> When facing a significant decision, ask three questions in sequence. How will I feel about this choice in 10 minutes? How will I feel about it in 10 months? How will I feel about it in 10 years? Write the answers. The conflict between your answers tells you almost everything you need to know.</p>
+          <div class="method-example">
+            <div class="method-example-label">EXAMPLE</div>
+            <p>Decision: whether to skip a training session today. In 10 minutes: relieved. In 10 months: slightly worse overall fitness, slightly weaker habit. In 10 years: negligible if occasional, significant if it becomes a pattern. The real question is not this session — it is what skipping signals about the habit. The 10-year frame makes this visible.</p>
+          </div>
+          <p>This method is especially useful for emotional decisions where short-term feeling and long-term interest are in conflict — which is most significant decisions.</p>
+        </div>
+      </div>
+
+      <div class="method-card">
+        <div class="method-header" onclick="toggle('m4','c4')">
+          <div class="method-meta">
+            <div class="method-num">METHOD 04</div>
+            <div class="method-name">The honest self-interview</div>
+            <div class="method-desc">For deep issues. Interview yourself as if you were someone else.</div>
+          </div>
+          <svg id="c4" class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </div>
+        <div class="method-body" id="m4">
+          <p>One of the hardest problems in self-reflection is that you are simultaneously the investigator and the subject. You have strong incentives to protect yourself from uncomfortable conclusions. The self-interview technique partially solves this by creating a deliberate separation between the questioner and the answerer.</p>
+          <p><strong>How to do it:</strong> Write your name at the top of a page. Then write a question addressed to yourself in the third person — as if you were interviewing someone you care about but are willing to challenge. Write the answer. Then write a follow-up question based on the answer. Continue for at least five rounds without letting yourself off the hook.</p>
+          <div class="method-example">
+            <div class="method-example-label">EXAMPLE</div>
+            <p>Q: Why has Wessel not started this project yet? A: Because I do not know where to begin. Q: Is that actually true, or is it an excuse? A: Partially. I know roughly where to start but I am afraid it will not be good enough. Q: What would happen if it were not good enough? A: I would feel like I had failed. Q: And what would that mean about you? A: That I am not as capable as I tell myself. Now we are at the real issue.</p>
+          </div>
+          <p>The process almost always ends somewhere more honest than where it began. That is the point.</p>
+        </div>
+      </div>
+
+      <div class="method-card">
+        <div class="method-header" onclick="toggle('m5','c5')">
+          <div class="method-meta">
+            <div class="method-num">METHOD 05</div>
+            <div class="method-name">The weekly review</div>
+            <div class="method-desc">For pattern recognition. Turns daily observations into strategic insight.</div>
+          </div>
+          <svg id="c5" class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </div>
+        <div class="method-body" id="m5">
+          <p>Individual days are too small a unit to see meaningful patterns. The weekly review zooms out far enough that patterns become visible. Done consistently, it is the most powerful tool for long-term behavioral change because it connects daily actions to weekly outcomes in a way that daily reflection cannot.</p>
+          <p><strong>How to do it:</strong> Set aside 20 minutes at the same time each week. Review your daily reflections from the past seven days. Then answer five questions: What pattern appeared most often this week? What did I avoid that I said I would do? What produced the best results and why? What drained my energy most? What is the one change that would most improve next week?</p>
+          <p>The weekly review is where the compounding effect of daily reflection becomes visible. Without it, daily entries are isolated observations. With it, they become a data set about your own behavior.</p>
+          <div class="method-example">
+            <div class="method-example-label">EXAMPLE</div>
+            <p>Pattern this week: I was most productive in the mornings and almost completely unproductive after 15:00. I avoided three difficult conversations by claiming I was too busy. My best results came from blocks where my phone was not in the room. Most energy-draining: context switching between tasks. One change: no meetings or social media before 12:00 next week.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="method-card">
+        <div class="method-header" onclick="toggle('m6','c6')">
+          <div class="method-meta">
+            <div class="method-num">METHOD 06</div>
+            <div class="method-name">Values alignment check</div>
+            <div class="method-desc">For direction. Are your daily actions consistent with what you say matters to you?</div>
+          </div>
+          <svg id="c6" class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </div>
+        <div class="method-body" id="m6">
+          <p>Most people can articulate their values when asked directly. Very few people live consistently with those values. The gap between stated values and actual behavior is one of the most reliable sources of low-level dissatisfaction, the feeling that something is wrong without being able to name what it is.</p>
+          <p><strong>How to do it:</strong> Write down your five most important values. Be specific — not "health" but "physical capacity I am proud of." Not "relationships" but "being someone people can rely on." Then look at the past seven days and estimate, honestly, what percentage of your time and energy actually went toward each value. The gap between what you say matters and where your time went is your reflection target.</p>
+          <div class="method-example">
+            <div class="method-example-label">EXAMPLE</div>
+            <p>Value: discipline and long-term thinking. Reality this week: I made three decisions based on short-term comfort rather than long-term intention. I skipped my planned work block twice. I spent four hours on things that do not move anything forward. The values check does not produce guilt — it produces a specific target for next week.</p>
+          </div>
+          <p>This method is most useful done monthly. Weekly is too frequent for values to shift. Monthly gives enough time for real behavioral data to accumulate.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CHAPTER 4 -->
+  <div class="chapter" id="from-insight-to-action">
+    <p class="chapter-label">PART 04</p>
+    <h2>From insight to action</h2>
+    <p>Reflection without action is the most sophisticated form of procrastination. It feels productive — you are thinking carefully about yourself, gaining understanding — but if it does not produce a behavioral change, it has produced nothing of value. Insight that does not change behavior is just interesting thinking.</p>
+    <p>The transition from insight to action is where most people fail. They reflect, they understand something new about themselves, and then they continue behaving exactly as before. This happens for one reason: the insight is not specific enough to act on. Understanding that you avoid difficult tasks is not actionable. Deciding that tomorrow, when you feel the urge to check your phone before starting work, you will instead open the document and write one sentence — that is actionable.</p>
+
+    <div class="pull-quote">An insight without a next action is just a thought with good self-esteem.</div>
+
+    <p>Every reflection session should end with one specific behavioral commitment for the next 24 hours. Not a resolution. Not a goal. A single concrete action that is small enough to be certain and specific enough to be measurable. If you reflected today and identified that you avoid conflict, your commitment is not to become more assertive. It is to say one honest thing tomorrow that you would normally leave unsaid.</p>
+    <p>Over time, this accumulates. Small, specific commitments made daily and kept consistently produce more lasting change than large commitments made occasionally and broken. This is the mechanism behind Synref: structured reflection that ends in a specific action, repeated daily, compounding over months and years into a substantially different way of living.</p>
+
+    <div class="insight">
+      <p><strong>The rule:</strong> Every reflection session ends with one sentence that begins with the words "Tomorrow I will specifically..." If you cannot finish that sentence with something concrete, reflect again until you can.</p>
+    </div>
+  </div>
+
+  <!-- CHAPTER 5 -->
+  <div class="chapter" id="common-mistakes">
+    <p class="chapter-label">PART 05</p>
+    <h2>The four mistakes that make reflection useless</h2>
+    <p><strong>Mistake 1: Reflecting in your head.</strong> Thinking without writing allows you to skip the uncomfortable parts without noticing that you are doing it. Writing forces completeness. If you cannot write it down, you have not actually thought it through.</p>
+    <p><strong>Mistake 2: Seeking comfort instead of truth.</strong> Reflection that makes you feel better without changing anything is not reflection — it is self-soothing. The goal is accuracy, not reassurance. If your reflection session always ends with the conclusion that you are basically fine, it is not working.</p>
+    <p><strong>Mistake 3: Reflecting only when something goes wrong.</strong> Reactive reflection produces crisis management. Proactive daily reflection produces a behavioral feedback loop that catches problems before they compound. Wait until things go wrong and you will always be one step behind.</p>
+    <p><strong>Mistake 4: Reflecting without acting.</strong> Covered above, but worth repeating: insight without behavioral commitment is not reflection. It is rumination with better vocabulary.</p>
+  </div>
+
+  <!-- NEXT STEPS -->
+  <div class="chapter" id="next">
+    <p class="chapter-label">WHERE TO GO FROM HERE</p>
+    <h2>Put it into practice.</h2>
+    <p>You now understand what self-reflection is, why it matters, and how to do it correctly. The next step is to apply it to something specific. Choose one of the paths below.</p>
+    <div class="next-grid">
+      <a href="/solve" class="next-card">
+        <div class="next-tag">SOLVE</div>
+        <h3>Find your problem</h3>
+        <p>Start with a specific issue. Use reflection to understand what is actually causing it.</p>
+      </a>
+      <a href="/train#awareness" class="next-card">
+        <div class="next-tag">TRAIN</div>
+        <h3>Train self-awareness</h3>
+        <p>Build the underlying skill through deliberate, progressive practice.</p>
+      </a>
+      <a href="/systems#reflection" class="next-card">
+        <div class="next-tag">SYSTEMS</div>
+        <h3>Build your system</h3>
+        <p>Set up the daily reflection habit with a structure that holds.</p>
+      </a>
+      <a href="/quotes#reflection" class="next-card">
+        <div class="next-tag">QUOTES</div>
+        <h3>On reflection</h3>
+        <p>Words from people who understood this deeply.</p>
+      </a>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <p>Synref</p>
+  <p>Copyright 2026 Synref. All rights reserved.</p>
+  <p>Reflect. Decide. Act.</p>
+</footer>
+
+<script>
+function toggle(bodyId, chevId) {
+  const body = document.getElementById(bodyId);
+  const chev = document.getElementById(chevId);
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  chev.classList.toggle('open', !isOpen);
+}
+const DATA = [
+  {title:"What is self-reflection",label:"REFLECT",excerpt:"The difference between rumination and real reflection.",url:"/reflect#what-is-reflection"},
+  {title:"Why reflection is the root skill",label:"REFLECT",excerpt:"How reflection compounds over time into lasting change.",url:"/reflect#why-it-matters"},
+  {title:"The Three Questions method",label:"REFLECT",excerpt:"Daily end-of-day review that builds a feedback loop.",url:"/reflect#methods"},
+  {title:"Trigger mapping",label:"REFLECT",excerpt:"Identify the root cause of recurring behavior.",url:"/reflect#methods"},
+  {title:"The 10-10-10 method",label:"REFLECT",excerpt:"Create temporal distance to make better decisions.",url:"/reflect#methods"},
+  {title:"The honest self-interview",label:"REFLECT",excerpt:"Interview yourself to reach deeper honesty.",url:"/reflect#methods"},
+  {title:"The weekly review",label:"REFLECT",excerpt:"Turn daily observations into strategic insight.",url:"/reflect#methods"},
+  {title:"Values alignment check",label:"REFLECT",excerpt:"Are your actions consistent with what you say matters?",url:"/reflect#methods"},
+  {title:"From insight to action",label:"REFLECT",excerpt:"Why reflection without action is sophisticated procrastination.",url:"/reflect#from-insight-to-action"},
+  {title:"Attention span",label:"SOLVE",excerpt:"Understand what fragments your focus.",url:"/solve#attention"},
+  {title:"Social media addiction",label:"SOLVE",excerpt:"Break the scroll loop with awareness.",url:"/solve#social-media"},
+  {title:"Sleep deprivation",label:"SOLVE",excerpt:"How poor sleep destroys self-reflection.",url:"/solve#sleep"},
+  {title:"App blockers",label:"SYSTEMS",excerpt:"Remove digital distractions structurally.",url:"/systems#focus"},
+  {title:"Sleep routine",label:"SYSTEMS",excerpt:"A wind-down system for better sleep.",url:"/systems#sleep"},
+  {title:"Daily reflection system",label:"SYSTEMS",excerpt:"End-of-day structure to review your actions.",url:"/systems#reflection"},
+  {title:"Training attention",label:"TRAIN",excerpt:"Progressive exercises to rebuild sustained focus.",url:"/train#attention"},
+  {title:"Awareness training",label:"TRAIN",excerpt:"Notice unconscious patterns in your behavior.",url:"/train#awareness"},
+];
+function openSearch(){document.getElementById('overlay').classList.add('open');setTimeout(()=>document.getElementById('search-input').focus(),50);}
+function closeSearch(){document.getElementById('overlay').classList.remove('open');document.getElementById('search-input').value='';document.getElementById('search-results').innerHTML='<div class="s-empty">Start typing to search.</div>';}
+function outsideClick(e){if(e.target===document.getElementById('overlay'))closeSearch();}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSearch();});
+function doSearch(q){
+  const el=document.getElementById('search-results');
+  if(!q.trim()){el.innerHTML='<div class="s-empty">Start typing to search.</div>';return;}
+  const matches=DATA.filter(d=>d.title.toLowerCase().includes(q.toLowerCase())||d.excerpt.toLowerCase().includes(q.toLowerCase())||d.label.toLowerCase().includes(q.toLowerCase()));
+  el.innerHTML=matches.length?matches.map(d=>`<a href="${d.url}" class="s-item" onclick="closeSearch()"><div class="s-label">${d.label}</div><div class="s-title">${d.title}</div><div class="s-excerpt">${d.excerpt}</div></a>`).join(''):'<div class="s-empty">No results found.</div>';
+}
+</script>
+</body>
+</html>
