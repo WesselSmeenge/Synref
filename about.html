@@ -124,11 +124,11 @@
   </div>
 </div>
 <script>
-function getCookie(n){const v=document.cookie.split(';');for(let i=0;i<v.length;i++){const p=v[i].trim();if(p.startsWith(n+'='))return p.substring(n.length+1);}return null;}
-function setCookie(n,v,days){const d=new Date();d.setTime(d.getTime()+(days*24*60*60*1000));document.cookie=n+'='+v+';expires='+d.toUTCString()+';path=/;SameSite=Lax';}
-(function(){if(!getCookie('synref-cookies'))document.getElementById('cookie-banner').style.display='flex';})();
-function acceptCookies(){setCookie('synref-cookies','yes',365);document.getElementById('cookie-banner').style.display='none';gtag('config','G-S6CCHZ11G5');}
-function declineCookies(){setCookie('synref-cookies','no',365);document.getElementById('cookie-banner').style.display='none';}
+function synSet(v){try{document.cookie='synref-cookies='+v+';max-age=31536000;path=/;SameSite=Lax';}catch(e){}try{localStorage.setItem('synref-cookies',v);}catch(e){}}
+function synGet(){try{const c=document.cookie.split(';').find(r=>r.trim().startsWith('synref-cookies='));if(c)return c.split('=')[1].trim();}catch(e){}try{const l=localStorage.getItem('synref-cookies');if(l)return l;}catch(e){}return null;}
+(function(){if(!synGet())document.getElementById('cookie-banner').style.display='flex';})();
+function acceptCookies(){synSet('yes');document.getElementById('cookie-banner').style.display='none';gtag('config','G-S6CCHZ11G5');}
+function declineCookies(){synSet('no');document.getElementById('cookie-banner').style.display='none';}
 </script>
 <script>
 const DATA=[
