@@ -137,7 +137,7 @@
   <p>Copyright 2026 Synref. All rights reserved.</p>
   <p>Reflect. Decide. Act.</p>
 </footer>
-<div id="cookie-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:500;background:#1d1d1f;color:#f5f5f7;padding:1rem 2.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;font-family:'DM Sans',sans-serif;font-size:13px;">
+<div id="cookie-banner" style="position:fixed;bottom:0;left:0;right:0;z-index:500;background:#1d1d1f;color:#f5f5f7;padding:1rem 2.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;font-family:'DM Sans',sans-serif;font-size:13px;">
   <p style="margin:0;font-weight:300;line-height:1.5;">Synref uses cookies to understand how visitors use this site. No personal data is sold or shared.</p>
   <div style="display:flex;gap:0.75rem;flex-shrink:0;">
     <button onclick="acceptCookies()" style="background:#ffffff;color:#1d1d1f;border:none;padding:8px 18px;border-radius:980px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;">Accept</button>
@@ -145,11 +145,27 @@
   </div>
 </div>
 <script>
-function synGet(){try{const c=document.cookie.split(';').find(r=>r.trim().startsWith('synref-cookies='));if(c)return c.split('=')[1].trim();}catch(e){}try{return localStorage.getItem('synref-cookies');}catch(e){}return null;}
-function synSet(v){try{document.cookie='synref-cookies='+v+';max-age=31536000;path=/;SameSite=Lax';}catch(e){}try{localStorage.setItem('synref-cookies',v);}catch(e){}}
-function acceptCookies(){synSet('yes');document.getElementById('cookie-banner').style.display='none';if(typeof gtag!=='undefined')gtag('config','G-S6CCHZ11G5');}
-function declineCookies(){synSet('no');document.getElementById('cookie-banner').style.display='none';}
-document.addEventListener('DOMContentLoaded',function(){if(!synGet()){document.getElementById('cookie-banner').style.display='flex';}});
+function synGet(){
+  try{
+    var c=document.cookie.split(';');
+    for(var i=0;i<c.length;i++){
+      var p=c[i].trim();
+      if(p.indexOf('synref-cookies=')===0)return p.substring('synref-cookies='.length);
+    }
+  }catch(e){}
+  try{var l=localStorage.getItem('synref-cookies');if(l)return l;}catch(e){}
+  return null;
+}
+function synSet(v){
+  try{document.cookie='synref-cookies='+v+';max-age=31536000;path=/;SameSite=Lax';}catch(e){}
+  try{localStorage.setItem('synref-cookies',v);}catch(e){}
+}
+var banner=document.getElementById('cookie-banner');
+if(synGet()){
+  banner.style.display='none';
+}
+function acceptCookies(){synSet('yes');banner.style.display='none';if(typeof gtag!=='undefined')gtag('config','G-S6CCHZ11G5');}
+function declineCookies(){synSet('no');banner.style.display='none';}
 </script>
 <script>
 const DATA=[
