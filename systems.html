@@ -162,11 +162,11 @@
   </div>
 </div>
 <script>
+function synGet(){try{const c=document.cookie.split(';').find(r=>r.trim().startsWith('synref-cookies='));if(c)return c.split('=')[1].trim();}catch(e){}try{return localStorage.getItem('synref-cookies');}catch(e){}return null;}
 function synSet(v){try{document.cookie='synref-cookies='+v+';max-age=31536000;path=/;SameSite=Lax';}catch(e){}try{localStorage.setItem('synref-cookies',v);}catch(e){}}
-function synGet(){try{const c=document.cookie.split(';').find(r=>r.trim().startsWith('synref-cookies='));if(c)return c.split('=')[1].trim();}catch(e){}try{const l=localStorage.getItem('synref-cookies');if(l)return l;}catch(e){}return null;}
-(function(){if(!synGet())document.getElementById('cookie-banner').style.display='flex';})();
-function acceptCookies(){synSet('yes');document.getElementById('cookie-banner').style.display='none';gtag('config','G-S6CCHZ11G5');}
+function acceptCookies(){synSet('yes');document.getElementById('cookie-banner').style.display='none';if(typeof gtag!=='undefined')gtag('config','G-S6CCHZ11G5');}
 function declineCookies(){synSet('no');document.getElementById('cookie-banner').style.display='none';}
+document.addEventListener('DOMContentLoaded',function(){if(!synGet()){document.getElementById('cookie-banner').style.display='flex';}});
 </script>
 <script>
 const DATA=[
